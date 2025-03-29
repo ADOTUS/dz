@@ -1,0 +1,14 @@
+C:\Users\AD\Desktop\DomashneeZadanie\DomashneeZadanie\DomashneeZadanie\bin\Debug\net8.0\DomashneeZadanie.exe
+C:\Users\AD\Desktop\DomashneeZadanie\DomashneeZadanie\DomashneeZadanie\bin\Debug\net8.0\DomashneeZadanie.deps.json
+C:\Users\AD\Desktop\DomashneeZadanie\DomashneeZadanie\DomashneeZadanie\bin\Debug\net8.0\DomashneeZadanie.runtimeconfig.json
+C:\Users\AD\Desktop\DomashneeZadanie\DomashneeZadanie\DomashneeZadanie\bin\Debug\net8.0\DomashneeZadanie.dll
+C:\Users\AD\Desktop\DomashneeZadanie\DomashneeZadanie\DomashneeZadanie\bin\Debug\net8.0\DomashneeZadanie.pdb
+C:\Users\AD\Desktop\DomashneeZadanie\DomashneeZadanie\DomashneeZadanie\obj\Debug\net8.0\DomashneeZadanie.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\AD\Desktop\DomashneeZadanie\DomashneeZadanie\DomashneeZadanie\obj\Debug\net8.0\DomashneeZadanie.AssemblyInfoInputs.cache
+C:\Users\AD\Desktop\DomashneeZadanie\DomashneeZadanie\DomashneeZadanie\obj\Debug\net8.0\DomashneeZadanie.AssemblyInfo.cs
+C:\Users\AD\Desktop\DomashneeZadanie\DomashneeZadanie\DomashneeZadanie\obj\Debug\net8.0\DomashneeZadanie.csproj.CoreCompileInputs.cache
+C:\Users\AD\Desktop\DomashneeZadanie\DomashneeZadanie\DomashneeZadanie\obj\Debug\net8.0\DomashneeZadanie.dll
+C:\Users\AD\Desktop\DomashneeZadanie\DomashneeZadanie\DomashneeZadanie\obj\Debug\net8.0\refint\DomashneeZadanie.dll
+C:\Users\AD\Desktop\DomashneeZadanie\DomashneeZadanie\DomashneeZadanie\obj\Debug\net8.0\DomashneeZadanie.pdb
+C:\Users\AD\Desktop\DomashneeZadanie\DomashneeZadanie\DomashneeZadanie\obj\Debug\net8.0\DomashneeZadanie.genruntimeconfig.cache
+C:\Users\AD\Desktop\DomashneeZadanie\DomashneeZadanie\DomashneeZadanie\obj\Debug\net8.0\ref\DomashneeZadanie.dll
