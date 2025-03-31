@@ -1,11 +1,12 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+//2. base($"Наименование ‘{ISIN}’ не соответствует требованиям (до 12 символов)") - максимальное количество символом может меняться. Не нужно его жестко приписывать в коде
+//3. Не нужно добавлять try catch в каждую команду. Должны быть более глобальные try catch например один в методе Main, второй в CommandExecute
+//4. Не catch для класса Exception
 namespace DomashneZadanie
 {
     internal static class Program
@@ -13,80 +14,98 @@ namespace DomashneZadanie
         private static string? Name;
         private static int cntTasks;// = 1;
         private static int lenghtTasks;
-        private static Dictionary<int, string> ISINS = new Dictionary<int, string> { };
+        static bool sucscess = false;
+        private static Dictionary<int, string> tasks = new Dictionary<int, string> { };
         private static Dictionary<string, string> allowedCommands = new Dictionary<string, string>
         {
             {"/start","     To set or change name"},
             {"/info","      To show info about version"},
             {"/help","      To show info about program"},
             {"/echo","      To echo"},
-            {"/addtask","   To add your ISIN to list"},
-            {"/showtasks"," To show your ISIN list"},
-            {"/removetask","To delete ISIN from list"},
+            {"/addtask","   To add your tasl to list"},
+            {"/showtasks"," To show your tasks list"},
+            {"/removetask","To delete task from list"},
             {"/exit","      To close the program"}
         };
         public static void Main(string[] args)
         {
-            try
+            while (!sucscess)//sucscess == false
             {
-                CntTasksSet();
-            }
-            catch (ArgumentException ex)
-            {
-                Console.WriteLine($"{ex.Message}. Установлено значение по умолчанию - 5");
-                cntTasks = 5;
-            }
+                try
 
-            try
-            {
-                LenghtTasksSet();
-            }
-            catch (ArgumentException ex)
-            {
-                Console.WriteLine($"{ex.Message}. Установлено значение по умолчанию - 12");
-                lenghtTasks = 12;
+                {
+                    CntTasksSet();
+                    LenghtTasksSet();
+                }
+                catch (TaskCountLimitException ex)
+                {
+                    Console.WriteLine($"{ex.Message}");
+                }
             }
 
             ShowMenu();
-            string? Command;
             while (true)
             {
-                Console.WriteLine(string.IsNullOrEmpty(Name) ? "Введите команду:" : $"Введите команду, {Name}:");
-                Command = Console.ReadLine();
-
                 try
                 {
+                    string? Command;
+
+                    Console.WriteLine(string.IsNullOrEmpty(Name) ? "Введите команду:" : $"Введите команду, {Name}:");
+                    Command = Console.ReadLine();
+
                     if (string.IsNullOrWhiteSpace(Command) || !allowedCommands.ContainsKey(Command))
                     {
-                        throw new CommandException();
+                        if (Command == null)
+                        { 
+                            throw new CommandException();
+                        }
+                        throw new CommandException(Command);
+                    }
+                    if (Command == "/exit")
+                    {
+
+                        Exit();
+                        return;
                     }
 
-                    if (Command == "/exit")
-                        return;
-
                     CommandExecute(Command);
+
+
                 }
                 catch (CommandException ex)
                 {
                     Console.WriteLine($"{ex.Message}");
                 }
+                catch (ArgumentException ex)
+                {
+                    Console.WriteLine($"{ex.Message}");
+                    Name = null;
+                }
+                catch (DuplicateTaskException ex)
+                {
+                    Console.WriteLine($"{ex.Message}");
+                }
+                catch (TaskLengthLimitException ex)
+                {
+                    Console.WriteLine($"{ex.Message}");
+                } 
             }
+
+        }
+        public static void CommandInput()
+        {
+
         }
         public static void CommandExecute(string Command)
         {
+
             switch (Command)
             {
                 case "/start":
                     Name = null;
-                    try
-                    {
-                        NameInput();
-                    }
-                    catch (ArgumentException ex)
-                    {
-                        Console.WriteLine($"{ex.Message}");
-                        Name = null;
-                    }
+
+                    NameInput();
+
                     break;
 
                 case "/help":
@@ -97,31 +116,9 @@ namespace DomashneZadanie
                     Info();
                     break;
 
-                case "/exit":
-                    Exit();
-                    break;
-
                 case "/addtask":
-                    try
-                    {
-                        Addtask();
-                    }
-                    catch (DuplicateTaskException ex)
-                    {
-                        Console.WriteLine($"{ex.Message}");
-                    }
-                    catch (TaskLengthLimitException ex)
-                    {
-                        Console.WriteLine($"{ex.Message}");
-                    }
-                    catch (ArgumentException ex)
-                    {
-                        Console.WriteLine($"{ex.Message}");
-                    }
-                    catch (TaskCountLimitException ex)
-                    {
-                        Console.WriteLine($"{ex.Message}");
-                    }
+
+                    Addtask();
                     break;
 
                 case "/showtasks":
@@ -129,17 +126,9 @@ namespace DomashneZadanie
                     break;
 
                 case "/removetask":
-                    try
-                    {
-                        Removetask();
-                    }
-                    catch (ArgumentException ex)
-                    {
-                        Console.WriteLine($"{ex.Message}");
-                    }
+
+                    Removetask();
                     break;
-                //Removetask();
-                //break;
 
                 case "/echo":
                     {
@@ -148,23 +137,16 @@ namespace DomashneZadanie
                             string? echoText = null;
                             while (string.IsNullOrEmpty(echoText))
                             {
-                                Console.WriteLine("Enter text to echo:");
+                                Console.WriteLine("Введите какой либо не пустой текст:");
                                 echoText = Console.ReadLine();
                             }
-                            try
-                            {
-                                int result = ParseAndValidateInt(echoText, 10, 100);
-                                Echo(echoText);
-                                break;
-                            }
-                            catch (Exception ex)
-                            {
-                                Console.WriteLine($"Ошибка: {ex.Message}");
-                            }
+
+                            Echo(echoText);
                             break;
                         }
                         else
                         {
+                            Console.WriteLine("Безымянному страннику эхо не отвечает:");
                             break;
                         }
                     }
@@ -172,18 +154,19 @@ namespace DomashneZadanie
                     Console.WriteLine($"Unknown command {Name}. Try again, please.");
                     break;
             }
+
         }
         static void AddItem(string value)
         {
 
-            if (ISINS.ContainsValue(value))
+            if (tasks.ContainsValue(value))
             {
                 throw new DuplicateTaskException(value);
             }
             else
             {
                 int newId = GetNextAvailableId();
-                ISINS[newId] = value;
+                tasks[newId] = value;
                 Console.WriteLine($"Элемент  {value}  добавлен в список с ID {newId}.");
             }
 
@@ -191,7 +174,7 @@ namespace DomashneZadanie
         static int GetNextAvailableId()
         {
             int Cnt = 1;
-            while (ISINS.ContainsKey(Cnt)) Cnt++;
+            while (tasks.ContainsKey(Cnt)) Cnt++;
             return Cnt;
         }
         public static void ShowMenu()
@@ -210,8 +193,8 @@ namespace DomashneZadanie
         }
         public static void CntTasksSet()
         {
-            Console.WriteLine("Введите максимальное количество ISIN для отслеживания:");
-            int value = ParseAndValidateInt(Console.ReadLine(), 0, 12);
+            Console.WriteLine("Введите максимальное количество задач для отслеживания:");
+            int value = ParseAndValidateInt(Console.ReadLine(), 0, 5);
             cntTasks = value;
             Console.WriteLine($"Вы ввели: {cntTasks}");
 
@@ -219,7 +202,7 @@ namespace DomashneZadanie
 
         public static void LenghtTasksSet()
         {
-            Console.WriteLine("Введите максимальную длину ISIN:");
+            Console.WriteLine("Введите максимальную длину задачи:");
             int value = ParseAndValidateInt(Console.ReadLine(), 0, 12);
             lenghtTasks = value;
             Console.WriteLine($"Вы ввели: {lenghtTasks}");
@@ -248,99 +231,96 @@ namespace DomashneZadanie
         }
         public static void Addtask()
         {
-            Console.WriteLine($"Write security ISIN  {Name}");
+            Console.WriteLine($"Напишите задачу  {Name}");
             Console.WriteLine("");
 
-            string? AddISIN = Console.ReadLine();
+            string? addTask = Console.ReadLine();
 
-            if (string.IsNullOrEmpty(AddISIN))
+            if (string.IsNullOrEmpty(addTask))
             {
                 throw new ArgumentException($"Введено пустое значение.");
             }
-            if (AddISIN.Length > lenghtTasks)
+            if (addTask.Length > lenghtTasks)
             {
-                throw new TaskLengthLimitException(lenghtTasks, AddISIN);
+                throw new TaskLengthLimitException(lenghtTasks, addTask);
             }
-            if (ISINS.Count == cntTasks)
+            if (tasks.Count == cntTasks)
             {
-                throw new TaskCountLimitException(cntTasks, AddISIN);
+                throw new TaskCountLimitException(cntTasks, addTask);
             }
-            if (string.IsNullOrWhiteSpace(AddISIN))
+            if (string.IsNullOrWhiteSpace(addTask))
             {
                 throw new ArgumentException("Введено недопустимое выражение");
             }
-            AddItem(AddISIN);
+            AddItem(addTask);
             Console.WriteLine("");
-            //if (ISINS.Count < cntTasks)
-            //{
-            //    Console.WriteLine($"Повторить добавление? Если да - нажми Y и ENTER  {Name}");
-            //    Console.WriteLine("");
-            //    if (Console.ReadLine() == "Y")
-            //        Addtask();
-            //}
+            if (tasks.Count < cntTasks)
+            {
+                Console.WriteLine($"Повторить добавление? Если да - нажми Y и ENTER  {Name}");
+                Console.WriteLine("");
+                if (Console.ReadLine() == "Y")
+                    Addtask();
+            }
         }
         public static void Showtasks()
         {
-            if (ISINS.Count == 0)
+            if (tasks.Count == 0)
             {
                 Console.WriteLine("Список пуст");
                 Console.WriteLine("");
             }
             else
             {
-                //Console.WriteLine("Список ISIN: " + string.Join(", ", ISIN));
-                foreach (var item in ISINS)
+                //Console.WriteLine("Список task: " + string.Join(", ", task));
+                foreach (var item in tasks)
                 {
                     Console.WriteLine($"{item.Key}. {item.Value}");
                 }
             }
-            //if (ISINS.Count < 5)
-            //{
-            //    Console.WriteLine($"Если надо добавить бумагу - нажми Y и ENTER  {Name}");
-            //    Console.WriteLine("");
-
-            //    if (Console.ReadLine() == "Y")
-            //        Addtask();
-            //}
         }
         public static void Removetask()
         {
-            if (ISINS.Count == 0)
+            if (tasks.Count == 0)
             {
                 Console.WriteLine("Список пустой");
                 Console.WriteLine("");
             }
             else
             {
-                Console.WriteLine("Введите номер бумаги из списка для удаления");
-                foreach (var item in ISINS)
+                Console.WriteLine("Введите номер задачи из списка для удаления");
+                foreach (var item in tasks)
                 {
                     Console.WriteLine($"{item.Key}. {item.Value}");
                 }
                 Console.WriteLine("");
 
-                int IdISIN;
-                IdISIN = ParseAndValidateInt((Console.ReadLine()), 0, cntTasks);
-                ISINS.Remove(IdISIN);
-                Console.WriteLine($"Удален элемент: {IdISIN}");
+                int idTask;
+                idTask = ParseAndValidateInt((Console.ReadLine()), 0, cntTasks);
+                tasks.Remove(idTask);
+                Console.WriteLine($"Удален элемент: {idTask}");
 
-                //Console.WriteLine($"Повторить удаление?Если да - нажми Y и ENTER  {Name}");
-                //Console.WriteLine("");
-                //if (Console.ReadLine() == "Y")
-                //    Removetask();
             }
         }
         public static int ParseAndValidateInt(string? str, int min, int max)
         {
-            if (int.TryParse(str, out int value))
+
+            if (int.TryParse(str, out int value) && value > min && value < max)
             {
-                if (value > min && value < max)
+                sucscess = true;
+                return value;
+            }
+            else
+            {
+                sucscess = false;
+                if (cntTasks != 0 && lenghtTasks!=0)
                 {
-                    return value;
+                    throw new TaskCountLimitException(cntTasks);
+                }
+                else
+                {
+                    throw new TaskCountLimitException(min,max);
                 }
             }
-            throw new ArgumentException("Ошибка");
-
         }
         public static string ValidateString(string? str)
         {

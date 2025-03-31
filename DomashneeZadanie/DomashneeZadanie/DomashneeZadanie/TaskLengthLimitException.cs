@@ -8,7 +8,7 @@ namespace DomashneZadanie
 {
     class TaskLengthLimitException : Exception
     {
-        public TaskLengthLimitException(int lenghtTasks, string AddISIN) : base($"Максимальное количество символов в ISIN - {lenghtTasks}. Вы ввели - {AddISIN}")
+        public TaskLengthLimitException(int lenghtTasks, string addTask) : base($"Максимальное количество символов в задаче - {lenghtTasks}. Вы ввели - {addTask}")
         { }
     }
 }

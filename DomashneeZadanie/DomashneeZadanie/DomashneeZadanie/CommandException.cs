@@ -9,6 +9,9 @@ namespace DomashneZadanie
     class CommandException : Exception
     {
         public CommandException()
-            : base($"Не верная команда, попробуйте снова.") { }
+            : base("Пустая команда не обрабатывается, попробуйте снова.") { }
+        public CommandException(string Command)
+            : base($"Не верная команда '{Command}', попробуйте снова.") { }
     }
+
 }

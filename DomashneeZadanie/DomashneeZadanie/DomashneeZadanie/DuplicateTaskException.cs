@@ -8,7 +8,7 @@ namespace DomashneZadanie
 {
     class DuplicateTaskException : Exception
     {
-        public DuplicateTaskException(string ISIN)
-            : base($"Бумага ‘{ISIN}’ уже существует в списке") { }
+        public DuplicateTaskException(string task)
+            : base($"Задача ‘{task}’ уже существует в списке") { }
     }
 }
